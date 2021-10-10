@@ -1,0 +1,116 @@
+﻿using SchedulerClass;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace SchedulerWindows
+{
+    public partial class SchedulerFrm : Form
+    {
+        private Scheduler scheduler;
+        private bool hasInputDate;
+        private bool hasEndDate;
+
+        public SchedulerFrm()
+        {
+            this.scheduler = new Scheduler();
+            this.hasInputDate = false;
+            this.hasEndDate = false;
+            InitializeComponent();
+            InstanceComponet();
+        }
+
+        private void InstanceComponet()
+        {
+            this.dtpCurrentDate.CustomFormat = "dd/MM/yyyy";
+            this.dtpInputTime.CustomFormat = " ";
+            this.dtpStartDate.CustomFormat = "dd/MM/yyyy";
+            this.dtpStartDate.Value = new DateTime(DateTime.Today.Year, 01, 01);
+            this.dtpEndDate.CustomFormat = " ";
+            this.dtpOutputDateTime.CustomFormat = " ";
+            this.dtpOutputDateTime.Enabled = false;
+            this.tbOutputDescription.Enabled = false;
+        }
+
+        private void BtCalculate_Click(object sender, EventArgs e)
+        {
+            this.scheduler.Type = this.cbType.Text;
+            this.scheduler.Occurs = this.cbOccurs.Text;
+            this.scheduler.CurrentDate = this.dtpCurrentDate.Value;
+            this.scheduler.InputDate = this.hasInputDate ? this.dtpInputTime.Value : new DateTime?();
+            this.scheduler.StartDate = this.dtpStartDate.Value;
+            this.scheduler.EndDate = this.hasEndDate ? this.dtpEndDate.Value : new DateTime?();
+            this.scheduler.OccursValue = Convert.ToInt32(this.nupDays.Value);
+
+            try
+            {
+                this.dtpOutputDateTime.Value = this.scheduler.CalculateDates();
+                this.tbOutputDescription.Text = this.scheduler.OutDescription;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+        }
+
+        private void CbType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.cbType.Text.Equals("Once"))
+            {
+                this.dtpInputTime.Enabled = true;
+                this.cbOccurs.Enabled = false;
+                this.nupDays.Enabled = false;
+            }
+            else
+            {
+                this.dtpInputTime.Enabled = false;
+                this.cbOccurs.Enabled = true;
+                this.nupDays.Enabled = true;
+            }
+        }
+
+        private void DateTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+            if (sender == this.dtpInputTime)
+            {
+                this.dtpInputTime.CustomFormat = "dd/MM/yyyy";
+                this.hasInputDate = true;
+            }
+            if (sender == this.dtpEndDate)
+            {
+                this.dtpEndDate.CustomFormat = "dd/MM/yyyy";
+                this.hasEndDate = true;
+            }
+            if (sender == this.dtpOutputDateTime)
+            {
+                this.dtpOutputDateTime.CustomFormat = "dd/MM/yyyy";
+            }
+        }
+
+        private void CbOccurs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (this.cbOccurs.Text)
+            {
+                case "Daily":
+                    this.lbDays.Text = "Day(s)";
+                    break;
+                case "Monthly":
+                    this.lbDays.Text = "Month(s)";
+                    break;
+                case "Yearly":
+                    this.lbDays.Text = "Year(s)";
+                    break;
+                default:
+                    this.lbDays.Text = "Days(s)";
+                    break;
+            }
+        }
+    }
+}
