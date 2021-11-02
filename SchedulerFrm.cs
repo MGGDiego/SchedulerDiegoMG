@@ -36,9 +36,12 @@ namespace SchedulerWindows
             this.dtpOutputDateTime.CustomFormat = " ";
             this.dtpOutputDateTime.Enabled = false;
             this.tbOutputDescription.Enabled = false;
+            this.chlbWeek.Visible = false;
+            this.chlbWeek.CheckOnClick = true;
+            this.nupDays.Size = new Size(170, 22);
         }
 
-        private void BtCalculate_Click(object sender, EventArgs e)
+        private void UploadPropierties()
         {
             this.scheduler.Type = this.cbType.Text;
             this.scheduler.Occurs = this.cbOccurs.Text;
@@ -47,6 +50,26 @@ namespace SchedulerWindows
             this.scheduler.StartDate = this.dtpStartDate.Value;
             this.scheduler.EndDate = this.hasEndDate ? this.dtpEndDate.Value : new DateTime?();
             this.scheduler.OccursValue = Convert.ToInt32(this.nupDays.Value);
+            this.scheduler.TimeConfiguration = null;
+            if (this.chbOccursOnce.Checked)
+            {
+                this.scheduler.TimeConfiguration =
+                    new TimeConfiguration(this.dtpStartHour.Value, this.dtpEndHour.Value, false);
+                this.scheduler.TimeConfiguration.OnceTime = this.dtpOccursOnceTime.Value;
+            }
+            else if (this.chbOccursEvery.Checked)
+            {
+                this.scheduler.TimeConfiguration =
+                    new TimeConfiguration(this.dtpStartHour.Value, this.dtpEndHour.Value, true);
+                this.scheduler.TimeConfiguration.OccursTime = this.cbOccursEvery.Text;
+                this.scheduler.TimeConfiguration.OccursTimeValue = Convert.ToInt32(this.nupHours.Value);
+            }
+            this.scheduler.WeekValue = this.chlbWeek.CheckedItems.OfType<string>().ToArray();
+        }
+
+        private void BtCalculate_Click(object sender, EventArgs e)
+        {
+            this.UploadPropierties();
 
             try
             {
@@ -99,17 +122,52 @@ namespace SchedulerWindows
             switch (this.cbOccurs.Text)
             {
                 case "Daily":
+                    this.nupDays.Size = new Size(170, 22);
                     this.lbDays.Text = "Day(s)";
+                    this.chlbWeek.Visible = false;
+                    break;
+                case "Weekly":
+                    this.nupDays.Size = new Size(36, 22);
+                    this.lbDays.Text = "Week(s)";
+                    this.chlbWeek.Visible = true;
                     break;
                 case "Monthly":
+                    this.nupDays.Size = new Size(170, 22);
                     this.lbDays.Text = "Month(s)";
+                    this.chlbWeek.Visible = false;
                     break;
                 case "Yearly":
+                    this.nupDays.Size = new Size(170, 22);
                     this.lbDays.Text = "Year(s)";
+                    this.chlbWeek.Visible = false;
                     break;
                 default:
                     this.lbDays.Text = "Days(s)";
                     break;
+            }
+        }
+
+        private void chbOccursOnce_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.chbOccursOnce.Checked == true)
+            {
+                this.chbOccursEvery.Checked = false;
+            }
+            else if (this.chbOccursOnce.Checked == false)
+            {
+                this.chbOccursOnce.Checked = false;
+            }
+        }
+
+        private void chbOccursEvery_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.chbOccursEvery.Checked == true)
+            {
+                this.chbOccursOnce.Checked = false;
+            }
+            else if (this.chbOccursEvery.Checked == false)
+            {
+                this.chbOccursEvery.Checked = false;
             }
         }
     }

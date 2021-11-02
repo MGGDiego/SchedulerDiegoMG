@@ -6,6 +6,7 @@ namespace SchedulerClass.UnitTest
     [TestClass]
     public class SchedulerTest
     {
+        #region CalculateDates_TypeOnce
         [TestMethod]
         public void CalculateDates_TypeOnceInputDate06Oct_Returns06Oct()
         {
@@ -35,11 +36,9 @@ namespace SchedulerClass.UnitTest
                 EndDate = new DateTime(2021, 12, 31)
             };
 
-            var result = string.Empty;
-            try { scheduler.CalculateDates(); }
-            catch (Exception ex) { result = ex.Message; }
+            var ex = Assert.ThrowsException<Exception>(() => scheduler.CalculateDates());
 
-            Assert.AreEqual("The dates are not in the range established in the Configuration.", result);
+            Assert.AreEqual("The dates are not in the range established in the Configuration.", ex.Message);
         }
 
         [TestMethod]
@@ -78,7 +77,9 @@ namespace SchedulerClass.UnitTest
 
             Assert.AreEqual(DescriptionWithEndDate, scheduler.OutDescription);
         }
+        #endregion
 
+        #region CalculateDates_TypeRecurring
         [TestMethod]
         public void CalculateDates_TypeRecurringInputDate06OctOccursValue3_Returns09Oct()
         {
@@ -110,11 +111,9 @@ namespace SchedulerClass.UnitTest
                 EndDate = new DateTime(2021, 12, 31)
             };
 
-            var result = string.Empty;
-            try { scheduler.CalculateDates(); }
-            catch (Exception ex) { result = ex.Message; }
+            var ex = Assert.ThrowsException<Exception>(() => scheduler.CalculateDates());
 
-            Assert.AreEqual("The dates are not in the range established in the Configuration.", result);
+            Assert.AreEqual("The dates are not in the range established in the Configuration.", ex.Message);
         }
 
         [TestMethod]
@@ -156,6 +155,95 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(DescriptionWithEndDate, scheduler.OutDescription);
         }
 
+        /*
+         * Weekly execution mode, Wednesday and Friday are selected, it should leave Friday as the next day.
+         */
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate28OctOccursWeeklyAndWeekValueWF_Returns29Oct()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 28),
+                Type = "Recurring",
+                Occurs = "Weekly",
+                OccursValue = 1,
+                WeekValue = new string[] { "Wednesday", "Friday" },
+                StartDate = new DateTime(2021, 01, 01),
+                EndDate = new DateTime(2021, 12, 31)
+            };
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2021, 10, 29), result);
+        }
+
+        /*
+         * Weekly execution mode, Tuesday and Saturday are selected, it should leave Tuesday as the next day.
+         */
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate30OctOccursWeeklyAndWeekValueTS_Returns02Nov()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 30),
+                Type = "Recurring",
+                Occurs = "Weekly",
+                OccursValue = 1,
+                WeekValue = new string[] { "Tuesday", "Saturday" },
+                StartDate = new DateTime(2021, 01, 01),
+                EndDate = new DateTime(2021, 12, 31)
+            };
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2021, 11, 02), result);
+        }
+
+        /*
+         * Weekly execution mode, Wednesday and Friday are selected, it should leave Friday as the next day.
+         */
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate28OctOccurs2WeeksAndWeekValueWF_Returns29Oct()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 28),
+                Type = "Recurring",
+                Occurs = "Weekly",
+                OccursValue = 2,
+                WeekValue = new string[] { "Wednesday", "Friday" },
+                StartDate = new DateTime(2021, 01, 01),
+                EndDate = new DateTime(2021, 12, 31)
+            };
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2021, 10, 29), result);
+        }
+
+        /*
+         * Weekly execution mode, Tuesday and Saturday are selected, it should leave Tuesday as the next day.
+         */
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate30OctOccurs2WeeksAndWeekValueTS_Returns09Nov()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 30),
+                Type = "Recurring",
+                Occurs = "Weekly",
+                OccursValue = 2,
+                WeekValue = new string[] { "Tuesday", "Saturday" },
+                StartDate = new DateTime(2021, 01, 01),
+                EndDate = new DateTime(2021, 12, 31)
+            };
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2021, 11, 09), result);
+        }
+        #endregion
+
         [TestMethod]
         public void ValidateDates_CurrentDateNotRangeDates_ReturnsException()
         {
@@ -166,13 +254,12 @@ namespace SchedulerClass.UnitTest
                 EndDate = new DateTime(2021, 12, 31)
             };
 
-            var result = string.Empty;
-            try { scheduler.ValidateDates(scheduler.CurrentDate); }
-            catch (Exception ex) { result = ex.Message; }
+            var ex = Assert.ThrowsException<Exception>(() => scheduler.ValidateDates(scheduler.CurrentDate));
 
-            Assert.AreEqual("The dates are not in the range established in the Configuration.", result);
+            Assert.AreEqual("The dates are not in the range established in the Configuration.", ex.Message);
         }
 
+        #region ValidateData
         [TestMethod]
         public void ValidateData_TypeIsEmpty_ReturnsException()
         {
@@ -181,11 +268,9 @@ namespace SchedulerClass.UnitTest
                 Type = string.Empty
             };
 
-            var result = string.Empty;
-            try { scheduler.ValidateData(); }
-            catch (Exception ex) { result = ex.Message; }
+            var ex = Assert.ThrowsException<Exception>(() => scheduler.ValidateData());
 
-            Assert.AreEqual("You must select a Type in the Configuration.", result);
+            Assert.AreEqual("You must select a Type in the Configuration.", ex.Message);
         }
 
         [TestMethod]
@@ -196,11 +281,9 @@ namespace SchedulerClass.UnitTest
                 Type = "Once"
             };
 
-            var result = string.Empty;
-            try { scheduler.ValidateData(); }
-            catch (Exception ex) { result = ex.Message; }
+            var ex = Assert.ThrowsException<Exception>(() => scheduler.ValidateData());
 
-            Assert.AreEqual("You must input date to perform the calculation.", result);
+            Assert.AreEqual("You must input date to perform the calculation.", ex.Message);
         }
 
         [TestMethod]
@@ -213,11 +296,9 @@ namespace SchedulerClass.UnitTest
                 CurrentDate = new DateTime(2021, 02, 01)
             };
 
-            var result = string.Empty;
-            try { scheduler.ValidateData(); }
-            catch (Exception ex) { result = ex.Message; }
+            var ex = Assert.ThrowsException<Exception>(() => scheduler.ValidateData());
 
-            Assert.AreEqual("The Current Date can not be greater than the one entered in the input.", result);
+            Assert.AreEqual("The Current Date can not be greater than the one entered in the input.", ex.Message);
         }
 
         [TestMethod]
@@ -228,11 +309,10 @@ namespace SchedulerClass.UnitTest
                 Type = "Recurring"
             };
 
-            var result = string.Empty;
-            try { scheduler.ValidateData(); }
-            catch (Exception ex) { result = ex.Message; }
+            var ex = Assert.ThrowsException<Exception>(() => scheduler.ValidateData());
 
-            Assert.AreEqual("You must enter a value in the occurs field.", result);
+            Assert.AreEqual("You must enter a value in the occurs field.", ex.Message);
         }
+        #endregion
     }
 }

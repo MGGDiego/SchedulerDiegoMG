@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,11 +19,15 @@ namespace SchedulerClass
         public DateTime? EndDate { get; set; }
         public int OccursValue { get; set; }
         public string OutDescription { get; set; }
+        public TimeConfiguration TimeConfiguration { get; set; }
+        public string[] WeekValue { get; set; }
 
         public DateTime CalculateDates()
         {
             this.ValidateData();
             this.ValidateDates(this.CurrentDate);
+            DateTime TheResult;
+            string TheDescription = string.Empty;
 
             string TextDescription = "Occurs {0}. Scheluder will be used on {1} starting on {2}";
             if (this.EndDate.HasValue)
@@ -32,9 +37,8 @@ namespace SchedulerClass
 
             if (this.Type.Equals("Once"))
             {
-                this.ValidateDates(this.InputDate.Value);
-                this.OutDescription = string.Format(TextDescription, "once", this.InputDate, this.StartDate);
-                return this.InputDate.Value;
+                TheResult = this.InputDate.Value;
+                TheDescription = "once";
             }
             else
             {
@@ -43,6 +47,10 @@ namespace SchedulerClass
                 {
                     case "Daily":
                         OccursDate = this.CurrentDate.AddDays(this.OccursValue);
+                        break;
+                    case "Weekly":
+                        OccursDate = this.CalculateWeek(this.CurrentDate);
+                        TheDescription = string.Format("every {0} weeks on {1} ", this.OccursValue, string.Join(", ", this.WeekValue));
                         break;
                     case "Monthly":
                         OccursDate = this.CurrentDate.AddMonths(this.OccursValue);
@@ -54,10 +62,14 @@ namespace SchedulerClass
                         OccursDate = this.CurrentDate;
                         break;
                 }
-                this.ValidateDates(OccursDate);
-                this.OutDescription = string.Format(TextDescription, "every date", OccursDate, this.StartDate);
-                return OccursDate;
+                string TheTimeDescription;
+                TheResult = this.CalculateTime(OccursDate, out TheTimeDescription);
+                TheDescription += TheTimeDescription;
             }
+
+            this.ValidateDates(TheResult);
+            this.OutDescription = string.Format(TextDescription, TheDescription, TheResult, this.StartDate);
+            return TheResult;
         }
 
         public void ValidateData()
@@ -77,9 +89,16 @@ namespace SchedulerClass
                     throw new Exception("The Current Date can not be greater than the one entered in the input.");
                 }
             }
-            if (this.Type.Equals("Recurring") && string.IsNullOrEmpty(this.Occurs))
+            if (this.Type.Equals("Recurring"))
             {
-                throw new Exception("You must enter a value in the occurs field.");
+                if (string.IsNullOrEmpty(this.Occurs))
+                {
+                    throw new Exception("You must enter a value in the occurs field.");
+                }
+                if (this.Occurs.Equals("Weekly") && this.WeekValue.Length == 0)
+                {
+                    throw new Exception("You must enter a value in the weeks field.");
+                }
             }
         }
 
@@ -89,6 +108,75 @@ namespace SchedulerClass
             {
                 throw new Exception("The dates are not in the range established in the Configuration.");
             }
+        }
+
+        public DateTime CalculateTime(DateTime TheDate, out string TheDescription)
+        {
+            TheDescription = "every date";
+            if (this.TimeConfiguration != null)
+            {
+                if (this.TimeConfiguration.OccursEvery)
+                {
+                    TheDescription = string.Format(" every {0} {1} between {2} and {3}",
+                        this.TimeConfiguration.OccursTimeValue, this.TimeConfiguration.OccursTime,
+                        this.TimeConfiguration.StartTime.ToString("HH:mm:ss tt"), this.TimeConfiguration.EndTime.ToString("HH:mm:ss tt"));
+                }
+                return this.TimeConfiguration.CalculateHours(TheDate);
+            }
+            return TheDate;
+        }
+
+        public DateTime CalculateWeek(DateTime TheDate) 
+        {
+            string[] jj = new string[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            string dd = TheDate.ToString("dddd", new CultureInfo("en-EN"));
+            int TheCurrentDay = 0;
+            List<int> TheDaysOfWeek = new List<int>();
+
+            int TheResultPos = 0;
+            int TheResultNeg = 0;
+
+            for (int i = 0; i < 7; i++)
+            {
+                if (jj[i] == dd)
+                {
+                    TheCurrentDay = i + 1;
+                }
+                foreach (string item in this.WeekValue)
+                {
+                    if (jj[i] == item)
+                    {
+                        TheDaysOfWeek.Add(i + 1);
+                    }
+                }
+            }
+
+            foreach (int CadaDia in TheDaysOfWeek)
+            {
+                if (TheCurrentDay < CadaDia && TheResultPos == 0)
+                {
+                    TheResultPos = CadaDia - TheCurrentDay;
+                }
+                if (TheCurrentDay > CadaDia && TheResultNeg == 0)
+                {
+                    TheResultNeg = CadaDia + (7 - TheCurrentDay);
+                }
+            }
+
+            DateTime TheResult;
+            if (TheResultPos != 0)
+            {
+                TheResult = TheDate.AddDays(TheResultPos);
+            }
+            else if (TheResultNeg != 0)
+            {
+                TheResult = TheDate.AddDays(TheResultNeg + (7 * (this.OccursValue - 1)));
+            }
+            else
+            {
+                TheResult = TheDate.AddDays(7 * (this.OccursValue));
+            }
+            return TheResult;
         }
     }
 }
