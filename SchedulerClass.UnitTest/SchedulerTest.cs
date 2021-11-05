@@ -81,7 +81,7 @@ namespace SchedulerClass.UnitTest
 
         #region CalculateDates_TypeRecurring
         [TestMethod]
-        public void CalculateDates_TypeRecurringInputDate06OctOccursValue3_Returns09Oct()
+        public void CalculateDates_TypeRecurringInputDate06OctOccursValue3IsDaily_Returns09Oct()
         {
             var scheduler = new Scheduler
             {
@@ -96,6 +96,42 @@ namespace SchedulerClass.UnitTest
             var result = scheduler.CalculateDates();
 
             Assert.AreEqual(new DateTime(2021, 10, 09), result);
+        }
+
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate06OctOccursValue3IsMonthly_Returns06Nov()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 06),
+                Type = "Recurring",
+                Occurs = "Monthly",
+                OccursValue = 1,
+                StartDate = new DateTime(2021, 01, 01),
+                EndDate = new DateTime(2021, 12, 31)
+            };
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2021, 11, 06), result);
+        }
+
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate06OctOccursValue3IsYearly_Returns09Oct()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 06),
+                Type = "Recurring",
+                Occurs = "Yearly",
+                OccursValue = 1,
+                StartDate = new DateTime(2021, 01, 01),
+                EndDate = new DateTime(2022, 12, 31)
+            };
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2022, 10, 06), result);
         }
 
         [TestMethod]
@@ -242,6 +278,71 @@ namespace SchedulerClass.UnitTest
 
             Assert.AreEqual(new DateTime(2021, 11, 09), result);
         }
+
+        /*
+         * Weekly execution mode, Tuesday and Saturday are selected, it should leave Tuesday as the next day.
+         */
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate30OctOccurs2WeeksAndWeekValueTS_Returns13Nov()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 30),
+                Type = "Recurring",
+                Occurs = "Weekly",
+                OccursValue = 2,
+                WeekValue = new string[] { "Saturday" },
+                StartDate = new DateTime(2021, 01, 01),
+                EndDate = new DateTime(2021, 12, 31)
+            };
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2021, 11, 13), result);
+        }
+
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate06Oct15HOccursValue3_Returns09Oct17H()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 06, 15, 0, 0),
+                Type = "Recurring",
+                Occurs = "Daily",
+                OccursValue = 3,
+                StartDate = new DateTime(2021, 01, 01, 0, 0, 0),
+                EndDate = new DateTime(2021, 12, 31, 0, 0, 0),
+                TimeConfiguration = new TimeConfiguration(
+                    new DateTime(2020, 01, 01, 12, 0, 0), new DateTime(2020, 01, 01, 22, 0, 0), false)
+            };
+            scheduler.TimeConfiguration.OnceTime = new DateTime(2021, 10, 06, 17, 0, 0);
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2021, 10, 09, 17, 0, 0), result);
+        }
+
+        [TestMethod]
+        public void CalculateDates_TypeRecurringInputDate06Oct15HOccursValue3IsEveryTime_Returns09Oct17H()
+        {
+            var scheduler = new Scheduler
+            {
+                CurrentDate = new DateTime(2021, 10, 06, 15, 0, 0),
+                Type = "Recurring",
+                Occurs = "Daily",
+                OccursValue = 3,
+                StartDate = new DateTime(2021, 01, 01, 0, 0, 0),
+                EndDate = new DateTime(2021, 12, 31, 0, 0, 0),
+                TimeConfiguration = new TimeConfiguration(
+                    new DateTime(2020, 01, 01, 12, 0, 0), new DateTime(2020, 01, 01, 22, 0, 0), true)
+            };
+            scheduler.TimeConfiguration.OccursTime = "Hour";
+            scheduler.TimeConfiguration.OccursTimeValue = 2;
+
+            var result = scheduler.CalculateDates();
+
+            Assert.AreEqual(new DateTime(2021, 10, 09, 17, 0, 0), result);
+        }
         #endregion
 
         [TestMethod]
@@ -312,6 +413,21 @@ namespace SchedulerClass.UnitTest
             var ex = Assert.ThrowsException<Exception>(() => scheduler.ValidateData());
 
             Assert.AreEqual("You must enter a value in the occurs field.", ex.Message);
+        }
+
+        [TestMethod]
+        public void ValidateData_TypeIsRecurringAndOccursIsWeeklyButWeekValue0_ReturException()
+        {
+            var scheduler = new Scheduler
+            {
+                Type = "Recurring",
+                Occurs = "Weekly",
+                WeekValue = new string[0]
+            };
+
+            var ex = Assert.ThrowsException<Exception>(() => scheduler.ValidateData());
+
+            Assert.AreEqual("You must enter a value in the weeks field.", ex.Message);
         }
         #endregion
     }

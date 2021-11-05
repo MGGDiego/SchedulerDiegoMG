@@ -54,8 +54,6 @@ namespace SchedulerClass
                     case "Hour":
                         TheDate = TheDate.AddHours(OccursTimeValue);
                         break;
-                    default:
-                        break;
                 }
                 if (this.ValidateTime(TheDate))
                 {

@@ -42,7 +42,7 @@ namespace SchedulerClass
             }
             else
             {
-                DateTime OccursDate;
+                DateTime OccursDate = this.CurrentDate;
                 switch (this.Occurs)
                 {
                     case "Daily":
@@ -57,9 +57,6 @@ namespace SchedulerClass
                         break;
                     case "Yearly":
                         OccursDate = this.CurrentDate.AddYears(this.OccursValue);
-                        break;
-                    default:
-                        OccursDate = this.CurrentDate;
                         break;
                 }
                 string TheTimeDescription;
