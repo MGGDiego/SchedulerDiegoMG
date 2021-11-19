@@ -1,4 +1,4 @@
-﻿using SchedulerClass;
+﻿//using SchedulerClass;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,13 +13,13 @@ namespace SchedulerWindows
 {
     public partial class SchedulerFrm : Form
     {
-        private Scheduler scheduler;
+        //private Scheduler scheduler;
         private bool hasInputDate;
         private bool hasEndDate;
 
         public SchedulerFrm()
         {
-            this.scheduler = new Scheduler();
+            //this.scheduler = new Scheduler();
             this.hasInputDate = false;
             this.hasEndDate = false;
             InitializeComponent();
@@ -43,28 +43,28 @@ namespace SchedulerWindows
 
         private void UploadPropierties()
         {
-            this.scheduler.Type = this.cbType.Text;
-            this.scheduler.Occurs = this.cbOccurs.Text;
-            this.scheduler.CurrentDate = this.dtpCurrentDate.Value;
-            this.scheduler.InputDate = this.hasInputDate ? this.dtpInputTime.Value : new DateTime?();
-            this.scheduler.StartDate = this.dtpStartDate.Value;
-            this.scheduler.EndDate = this.hasEndDate ? this.dtpEndDate.Value : new DateTime?();
-            this.scheduler.OccursValue = Convert.ToInt32(this.nupDays.Value);
-            this.scheduler.TimeConfiguration = null;
-            if (this.chbOccursOnce.Checked)
-            {
-                this.scheduler.TimeConfiguration =
-                    new TimeConfiguration(this.dtpStartHour.Value, this.dtpEndHour.Value, false);
-                this.scheduler.TimeConfiguration.OnceTime = this.dtpOccursOnceTime.Value;
-            }
-            else if (this.chbOccursEvery.Checked)
-            {
-                this.scheduler.TimeConfiguration =
-                    new TimeConfiguration(this.dtpStartHour.Value, this.dtpEndHour.Value, true);
-                this.scheduler.TimeConfiguration.OccursTime = this.cbOccursEvery.Text;
-                this.scheduler.TimeConfiguration.OccursTimeValue = Convert.ToInt32(this.nupHours.Value);
-            }
-            this.scheduler.WeekValue = this.chlbWeek.CheckedItems.OfType<string>().ToArray();
+            //this.scheduler.Type = this.cbType.Text;
+            //this.scheduler.Occurs = this.cbOccurs.Text;
+            //this.scheduler.CurrentDate = this.dtpCurrentDate.Value;
+            //this.scheduler.InputDate = this.hasInputDate ? this.dtpInputTime.Value : new DateTime?();
+            //this.scheduler.StartDate = this.dtpStartDate.Value;
+            //this.scheduler.EndDate = this.hasEndDate ? this.dtpEndDate.Value : new DateTime?();
+            //this.scheduler.OccursValue = Convert.ToInt32(this.nupDays.Value);
+            //this.scheduler.TimeConfiguration = null;
+            //if (this.chbOccursOnce.Checked)
+            //{
+            //    this.scheduler.TimeConfiguration =
+            //        new TimeConfiguration(this.dtpStartHour.Value, this.dtpEndHour.Value, false);
+            //    this.scheduler.TimeConfiguration.OnceTime = this.dtpOccursOnceTime.Value;
+            //}
+            //else if (this.chbOccursEvery.Checked)
+            //{
+            //    this.scheduler.TimeConfiguration =
+            //        new TimeConfiguration(this.dtpStartHour.Value, this.dtpEndHour.Value, true);
+            //    this.scheduler.TimeConfiguration.OccursTime = this.cbOccursEvery.Text;
+            //    this.scheduler.TimeConfiguration.OccursTimeValue = Convert.ToInt32(this.nupHours.Value);
+            //}
+            //this.scheduler.WeekValue = this.chlbWeek.CheckedItems.OfType<string>().ToArray();
         }
 
         private void BtCalculate_Click(object sender, EventArgs e)
@@ -73,8 +73,8 @@ namespace SchedulerWindows
 
             try
             {
-                this.dtpOutputDateTime.Value = this.scheduler.CalculateDates();
-                this.tbOutputDescription.Text = this.scheduler.OutDescription;
+                //this.dtpOutputDateTime.Value = this.scheduler.CalculateDates();
+                //this.tbOutputDescription.Text = this.scheduler.OutDescription;
             }
             catch (Exception ex)
             {
