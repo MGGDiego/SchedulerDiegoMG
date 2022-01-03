@@ -8,6 +8,12 @@ namespace SchedulerClass
 {
     public class TimeConfigurationGestor
     {
+        private Auxiliary AuxiliaryClass;
+        public TimeConfigurationGestor()
+        {
+            this.AuxiliaryClass = new Auxiliary();
+        }
+
         public DateTime CalculateHours(TimeConfiguration TimeConfigurationClass, DateTime TheDate)
         {
             if (TimeConfigurationClass.OccursEvery)
@@ -22,13 +28,14 @@ namespace SchedulerClass
 
         public DateTime CalculateHoursOccursEvery(DateTime TheDate, TimeConfiguration TimeConfigurationClass)
         {
-            DateTime ResaultDate = this.AddTime(TheDate, TimeConfigurationClass);
-            if (this.TimeNotInRange(ResaultDate.TimeOfDay, TimeConfigurationClass.StartTime, TimeConfigurationClass.EndTime))
+            bool CurrentDateNotInRange = this.TimeNotInRange(TheDate.TimeOfDay, TimeConfigurationClass.StartTime, TimeConfigurationClass.EndTime);
+            DateTime ResultDate = this.AddTime(TheDate, TimeConfigurationClass);
+            bool ResultDateNotInRange = this.TimeNotInRange(ResultDate.TimeOfDay, TimeConfigurationClass.StartTime, TimeConfigurationClass.EndTime);
+            if (CurrentDateNotInRange || ResultDateNotInRange)
             {
-                ResaultDate = new DateTime(TheDate.Year, TheDate.Month, TheDate.Day,
-                    TimeConfigurationClass.StartTime.Hours, TimeConfigurationClass.StartTime.Minutes, TimeConfigurationClass.StartTime.Seconds);
+                ResultDate = this.AuxiliaryClass.JoinDateWithTime(TheDate, TimeConfigurationClass.StartTime);
             }
-            return ResaultDate;
+            return ResultDate;
         }
 
         public DateTime AddTime(DateTime TheDate, TimeConfiguration TimeConfigurationClass)
@@ -50,8 +57,7 @@ namespace SchedulerClass
 
         public DateTime CalculateHoursOccursOnce(DateTime TheDate, TimeConfiguration TimeConfigurationClass)
         {
-            DateTime TheResultTime = new DateTime(TheDate.Year, TheDate.Month, TheDate.Day,
-                TimeConfigurationClass.OnceTime.Value.Hours, TimeConfigurationClass.OnceTime.Value.Minutes, TimeConfigurationClass.OnceTime.Value.Seconds);
+            DateTime TheResultTime = this.AuxiliaryClass.JoinDateWithTime(TheDate, TimeConfigurationClass.OnceTime.Value);
             if (this.TimeNotInRange(TheResultTime.TimeOfDay, TimeConfigurationClass.StartTime, TimeConfigurationClass.EndTime))
             {
                 throw new Exception("The times are not in the range established in the Configuration.");

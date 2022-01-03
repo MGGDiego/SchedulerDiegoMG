@@ -9,8 +9,11 @@ namespace SchedulerClass
 {
     public class SchedulerGestor
     {
+        private Auxiliary AuxiliaryClass;
         public SchedulerGestor()
-        { }
+        {
+            this.AuxiliaryClass = new Auxiliary();
+        }
 
         public DateTime CalculateDates(Scheduler SchedulerClass)
         {
@@ -55,7 +58,7 @@ namespace SchedulerClass
                     TheResult = JumpTime ? TheResult : TheResult.AddDays(SchedulerClass.OccursValue);
                     break;
                 case "Weekly":
-                    TheResult = this.CalculateWeek(TheResult, SchedulerClass.WeekValue, 
+                    TheResult = this.CalculateWeek(TheResult, SchedulerClass.WeekValue,
                         SchedulerClass.OccursValue, JumpTime, SchedulerClass.TimeConfiguration?.StartTime);
                     if (SchedulerClass.TimeConfiguration != null)
                     {
@@ -65,7 +68,12 @@ namespace SchedulerClass
                         " every {0} weeks on {1}", SchedulerClass.OccursValue, string.Join(", ", SchedulerClass.WeekValue));
                     break;
                 case "Monthly":
-                    TheResult = TheResult.AddMonths(SchedulerClass.OccursValue);
+                    TheResult = new MonthlyConfigurationGestor().CalculateMonthlyConfiguration(
+                        TheResult, SchedulerClass.MonthlyConfiguration.FrecuencyType, SchedulerClass.MonthlyConfiguration.WeeklyValue,
+                        SchedulerClass.OccursValue, JumpTime, JumpTime);
+                    AdditionalDescription.AppendFormat(
+                        " the {0} {1} of every {2} months", SchedulerClass.MonthlyConfiguration.FrecuencyType,
+                        SchedulerClass.MonthlyConfiguration.WeeklyValue, SchedulerClass.OccursValue);
                     break;
                 case "Yearly":
                     TheResult = TheResult.AddYears(SchedulerClass.OccursValue);
@@ -79,7 +87,7 @@ namespace SchedulerClass
         {
             if (CurrentDate < Result && CurrentDate.TimeOfDay == Result.TimeOfDay)
             {
-                return new DateTime(Result.Year, Result.Month, Result.Day, StartTime.Hours, StartTime.Minutes, StartTime.Seconds);
+                return this.AuxiliaryClass.JoinDateWithTime(Result, StartTime);
             }
             return Result;
         }
@@ -137,10 +145,10 @@ namespace SchedulerClass
             }
             return TheDate;
         }
-        
-        public DateTime CalculateWeek(DateTime TheDate, DayOfWeek[] WeekValue, int NumberOfWeeks, bool JumpTime, TimeSpan? startTime)
+
+        public DateTime CalculateWeek(DateTime TheDate, SchedulerWeek[] WeekValue, int NumberOfWeeks, bool JumpTime, TimeSpan? startTime)
         {
-            int TheCurrentDay = (int)TheDate.DayOfWeek == 0 ? 7 : (int)TheDate.DayOfWeek;
+            int TheCurrentDay = this.AuxiliaryClass.GetSchedulerWeek(TheDate);
             int TheResultPos = 0;
             int TheResultNeg = 0;
 
@@ -168,8 +176,7 @@ namespace SchedulerClass
                 TheResult = TheDate.AddDays(TheResultPos);
                 if (startTime.HasValue)
                 {
-                    TheResult = new DateTime(TheResult.Year, TheResult.Month, TheResult.Day, 
-                        startTime.Value.Hours, startTime.Value.Minutes, startTime.Value.Seconds);
+                    TheResult = this.AuxiliaryClass.JoinDateWithTime(TheResult, startTime.Value);
                 }
             }
             else if (TheResultNeg != 0)
@@ -177,8 +184,7 @@ namespace SchedulerClass
                 TheResult = TheDate.AddDays(TheResultNeg + (7 * (NumberOfWeeks - 1)));
                 if (startTime.HasValue)
                 {
-                    TheResult = new DateTime(TheResult.Year, TheResult.Month, TheResult.Day,
-                        startTime.Value.Hours, startTime.Value.Minutes, startTime.Value.Seconds);
+                    TheResult = this.AuxiliaryClass.JoinDateWithTime(TheResult, startTime.Value);
                 }
             }
             else
@@ -191,16 +197,5 @@ namespace SchedulerClass
             }
             return TheResult;
         }
-    }
-
-    public enum DayOfWeek
-    {
-        Monday = 1,
-        Tuesday = 2,
-        Wednesday = 3,
-        Thursday = 4,
-        Friday = 5,
-        Saturday = 6,
-        Sunday = 7
     }
 }

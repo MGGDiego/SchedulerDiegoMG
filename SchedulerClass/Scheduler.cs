@@ -19,7 +19,19 @@ namespace SchedulerClass
         public DateTime? EndDate { get; set; }
         public int OccursValue { get; set; }
         public string OutDescription { get; set; }
+        public SchedulerWeek[] WeekValue { get; set; }
         public TimeConfiguration TimeConfiguration { get; set; }
-        public DayOfWeek[] WeekValue { get; set; }
+        public MonthlyConfiguration MonthlyConfiguration { get; set; }
+    }
+
+    public enum SchedulerWeek
+    {
+        Monday = 1,
+        Tuesday = 2,
+        Wednesday = 3,
+        Thursday = 4,
+        Friday = 5,
+        Saturday = 6,
+        Sunday = 7
     }
 }

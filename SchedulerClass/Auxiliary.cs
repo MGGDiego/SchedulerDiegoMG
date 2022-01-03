@@ -38,5 +38,20 @@ namespace SchedulerClass
             if (TheString.Length > 40) { result = false; }
             return result;
         }
+
+        public int GetSchedulerWeek(DateTime TheDate)
+        {
+            return TheDate.DayOfWeek == 0 ? 7 : (int)TheDate.DayOfWeek;
+        }
+        
+        public DateTime ChangeDay(DateTime TheDate, int NewDay)
+        {
+            return new DateTime(TheDate.Year, TheDate.Month, NewDay, TheDate.Hour, TheDate.Minute, TheDate.Second);
+        }
+
+        public DateTime JoinDateWithTime(DateTime TheDate, TimeSpan TheTime)
+        {
+            return new DateTime(TheDate.Year, TheDate.Month, TheDate.Day, TheTime.Hours, TheTime.Minutes, TheTime.Seconds);
+        }
     }
 }

@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auxiliary.cs" />
+    <Compile Include="MonthlyConfiguration.cs" />
+    <Compile Include="MonthlyConfigurationGestor.cs" />
     <Compile Include="Scheduler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerGestor.cs" />
