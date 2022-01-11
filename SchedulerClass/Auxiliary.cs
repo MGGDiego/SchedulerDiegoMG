@@ -39,9 +39,9 @@ namespace SchedulerClass
             return result;
         }
 
-        public int GetSchedulerWeek(DateTime TheDate)
+        public SchedulerWeek GetSchedulerWeek(DateTime TheDate)
         {
-            return TheDate.DayOfWeek == 0 ? 7 : (int)TheDate.DayOfWeek;
+            return TheDate.DayOfWeek == 0 ? SchedulerWeek.Sunday : (SchedulerWeek)TheDate.DayOfWeek;
         }
         
         public DateTime ChangeDay(DateTime TheDate, int NewDay)

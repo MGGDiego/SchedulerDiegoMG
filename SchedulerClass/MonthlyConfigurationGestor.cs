@@ -16,142 +16,137 @@ namespace SchedulerClass
         }
 
         public DateTime CalculateMonthlyConfiguration(DateTime CurrentDay, FrecuencyType TheFrecuencyType,
-            WeeklyValue TheWeeklyValue, int OccursValue, bool JumpTime, bool repeticion)
+            WeeklyValue TheWeeklyValue, int OccursValue, bool JumpTime, bool Repetition)
         {
-            int Day = 1;
-            int AddDay = 1;
-
-            if (TheFrecuencyType == FrecuencyType.Last && TheWeeklyValue != WeeklyValue.WeekDay)
-            {
-                Day = DateTime.DaysInMonth(CurrentDay.Year, CurrentDay.Month);
-                AddDay = -1;
-            }
-
+            int Day = TheFrecuencyType != FrecuencyType.Last ? 1 : DateTime.DaysInMonth(CurrentDay.Year, CurrentDay.Month);
+            int AddDay = TheFrecuencyType != FrecuencyType.Last ? 1 : -1;
             int TheDayOfWeek = this.GetDayOfWeek(TheWeeklyValue, TheFrecuencyType, CurrentDay);
 
-            DateTime FirstDayOfMonth;
-            if ((int)TheWeeklyValue == 8)
-            {
-                FirstDayOfMonth = this.AuxiliaryClass.ChangeDay(CurrentDay, TheDayOfWeek);
-            }
-            else if ((int)TheWeeklyValue == 9)
-            {
-                if (JumpTime)
-                {
-                    FirstDayOfMonth = CurrentDay;
-                }
-                else
-                {
-                    FirstDayOfMonth = this.AuxiliaryClass.ChangeDay(CurrentDay, Day);
-                    int FirstDayOfMonthValue = this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth);
-                    while (FirstDayOfMonthValue == 6 || FirstDayOfMonthValue == 7)
-                    {
-                        FirstDayOfMonth = FirstDayOfMonth.AddDays(AddDay);
-                        FirstDayOfMonthValue = GetMonthlyDay(FirstDayOfMonthValue, AddDay);
-                    }
+            DateTime ResultDate = GetResultDate(TheWeeklyValue, this.AuxiliaryClass.ChangeDay(CurrentDay, Day), CurrentDay, AddDay, TheDayOfWeek, TheFrecuencyType, JumpTime, Repetition);
 
-                    FirstDayOfMonth = CalculateFrecuency(TheFrecuencyType, FirstDayOfMonth);
-
-                    if (FirstDayOfMonthValue != 1 && TheFrecuencyType != FrecuencyType.First)
-                    {
-                        FirstDayOfMonthValue = 6;
-                        FirstDayOfMonth = FirstDayOfMonth.AddDays(-1);
-                    }
-
-                    if (FirstDayOfMonth == CurrentDay && FirstDayOfMonthValue == 6 && repeticion == false)
-                    {
-                        FirstDayOfMonth = FirstDayOfMonth.AddDays(1);
-                        if (FirstDayOfMonth.Month > CurrentDay.Month)
-                        {
-                            FirstDayOfMonth = FirstDayOfMonth.AddDays(-1);
-                        }
-                    }
-                }
-            }
-            else if ((int)TheWeeklyValue == 10)
-            {
-                if (JumpTime)
-                {
-                    FirstDayOfMonth = CurrentDay;
-                }
-                else
-                {
-                    FirstDayOfMonth = this.AuxiliaryClass.ChangeDay(CurrentDay, Day);
-                    int FirstDayOfMonthValue = this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth);
-                    while (FirstDayOfMonthValue != 6 && FirstDayOfMonthValue != 7)
-                    {
-                        FirstDayOfMonth = FirstDayOfMonth.AddDays(AddDay);
-                        FirstDayOfMonthValue = GetMonthlyDay(FirstDayOfMonthValue, AddDay);
-                    }
-
-                    FirstDayOfMonth = CalculateFrecuency(TheFrecuencyType, FirstDayOfMonth);
-
-                    if (FirstDayOfMonthValue == 7 && TheFrecuencyType != FrecuencyType.First)
-                    {
-                        FirstDayOfMonthValue = 6;
-                        FirstDayOfMonth = FirstDayOfMonth.AddDays(-1);
-                    }
-
-                    if (FirstDayOfMonth == CurrentDay && FirstDayOfMonthValue == 6 && repeticion == false)
-                    {
-                        FirstDayOfMonth = FirstDayOfMonth.AddDays(1);
-                        if (FirstDayOfMonth.Month > CurrentDay.Month)
-                        {
-                            FirstDayOfMonth = FirstDayOfMonth.AddDays(-1);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                FirstDayOfMonth = this.AuxiliaryClass.ChangeDay(CurrentDay, Day);
-                int FirstDayOfMonthValue = this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth);
-                while (FirstDayOfMonthValue != TheDayOfWeek)
-                {
-                    FirstDayOfMonth = FirstDayOfMonth.AddDays(AddDay);
-                    FirstDayOfMonthValue = GetMonthlyDay(FirstDayOfMonthValue, AddDay);
-                }
-
-                FirstDayOfMonth = CalculateFrecuency(TheFrecuencyType, FirstDayOfMonth);
-            }
-
-            if (FirstDayOfMonth <= CurrentDay && repeticion == false)
+            if (ResultDate <= CurrentDay && Repetition == false)
             {
                 DateTime NewCurrentDay = new DateTime(CurrentDay.Year, CurrentDay.Month, 1,
-                    FirstDayOfMonth.Hour, FirstDayOfMonth.Minute, FirstDayOfMonth.Second).AddMonths(OccursValue);
-                FirstDayOfMonth = this.CalculateMonthlyConfiguration(NewCurrentDay, TheFrecuencyType, TheWeeklyValue, OccursValue, JumpTime, true);
+                    ResultDate.Hour, ResultDate.Minute, ResultDate.Second).AddMonths(OccursValue);
+                ResultDate = this.CalculateMonthlyConfiguration(NewCurrentDay, TheFrecuencyType, TheWeeklyValue, OccursValue, JumpTime, true);
             }
 
+            return ResultDate;
+        }
+
+        private DateTime GetResultDate(WeeklyValue TheWeeklyValue, DateTime FirstDayOfMonth, DateTime CurrentDay, 
+            int AddDay, int TheDayOfWeek, FrecuencyType TheFrecuencyType, bool JumpTime, bool repeticion)
+        {
+            switch (TheWeeklyValue)
+            {
+                case WeeklyValue.Day:
+                    FirstDayOfMonth = this.AuxiliaryClass.ChangeDay(CurrentDay, TheDayOfWeek);
+                    break;
+                case WeeklyValue.WeekDay:
+                    FirstDayOfMonth = CalculateWeekDay(FirstDayOfMonth, CurrentDay, AddDay, TheFrecuencyType, JumpTime, repeticion);
+                    break;
+                case WeeklyValue.WeekendDay:
+                    FirstDayOfMonth = CalculateWeekendDay(FirstDayOfMonth, CurrentDay, AddDay, TheFrecuencyType, JumpTime, repeticion);
+                    break;
+                default:
+                    FirstDayOfMonth = CalculateWeeklyDate(FirstDayOfMonth, AddDay, TheFrecuencyType, (SchedulerWeek)TheDayOfWeek);
+                    break;
+            }
             return FirstDayOfMonth;
         }
 
-        private int GetMonthlyDay(int FirstDayOfMonthValue, int AddDay)
+        private DateTime CalculateWeekDay(DateTime FirstDayOfMonth, DateTime CurrentDay, int AddDay, FrecuencyType TheFrecuencyType, bool JumpTime, bool repeticion)
         {
-            if (AddDay == 1)
+            if (JumpTime)
             {
-                if (FirstDayOfMonthValue >= 7) FirstDayOfMonthValue = 0;
-                FirstDayOfMonthValue++;
+                FirstDayOfMonth = CurrentDay;
             }
             else
             {
-                if (FirstDayOfMonthValue <= 1) FirstDayOfMonthValue = 8;
-                FirstDayOfMonthValue--;
+                if (TheFrecuencyType == FrecuencyType.Last)
+                {
+                    while (this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) != SchedulerWeek.Monday)
+                    {
+                        FirstDayOfMonth = FirstDayOfMonth.AddDays(AddDay);
+                    }
+                }
+                else
+                {
+                    while (this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) == SchedulerWeek.Saturday || 
+                        this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) == SchedulerWeek.Sunday)
+                    {
+                        FirstDayOfMonth = FirstDayOfMonth.AddDays(AddDay);
+                    }
+                }
+
+                FirstDayOfMonth = CalculateFrecuency(TheFrecuencyType, FirstDayOfMonth, (int)this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) - 1);
+
+                if (FirstDayOfMonth <= CurrentDay && FirstDayOfMonth.AddDays(4) > CurrentDay && this.AuxiliaryClass.GetSchedulerWeek(CurrentDay) < SchedulerWeek.Friday && repeticion == false)
+                {
+                    FirstDayOfMonth = CurrentDay.AddDays(1);
+                    if (FirstDayOfMonth.Month > CurrentDay.Month)
+                    {
+                        FirstDayOfMonth = FirstDayOfMonth.AddDays(-1);
+                    }
+                }
             }
-            return FirstDayOfMonthValue;
+            return FirstDayOfMonth;
         }
 
-        private DateTime CalculateFrecuency(FrecuencyType TheFrecuencyType, DateTime FirstDayOfMonth)
+        private DateTime CalculateWeekendDay(DateTime FirstDayOfMonth, DateTime CurrentDay, int AddDay, FrecuencyType TheFrecuencyType, bool JumpTime, bool repeticion)
+        {
+            if (JumpTime)
+            {
+                FirstDayOfMonth = CurrentDay;
+            }
+            else
+            {
+                while (this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) != SchedulerWeek.Saturday && 
+                    this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) != SchedulerWeek.Sunday)
+                {
+                    FirstDayOfMonth = FirstDayOfMonth.AddDays(AddDay);
+                }
+
+                FirstDayOfMonth = CalculateFrecuency(TheFrecuencyType, FirstDayOfMonth);
+
+                if (this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) == SchedulerWeek.Sunday && FirstDayOfMonth.Day != 1)
+                {
+                    FirstDayOfMonth = FirstDayOfMonth.AddDays(-1);
+                }
+
+                if (FirstDayOfMonth == CurrentDay && this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) == SchedulerWeek.Saturday && repeticion == false)
+                {
+                    FirstDayOfMonth = FirstDayOfMonth.AddDays(1);
+                    if (FirstDayOfMonth.Month > CurrentDay.Month)
+                    {
+                        FirstDayOfMonth = FirstDayOfMonth.AddDays(-1);
+                    }
+                }
+            }
+            return FirstDayOfMonth;
+        }
+
+        private DateTime CalculateWeeklyDate(DateTime FirstDayOfMonth, int AddDay, FrecuencyType TheFrecuencyType, SchedulerWeek TheDayOfWeek)
+        {
+            while (this.AuxiliaryClass.GetSchedulerWeek(FirstDayOfMonth) != TheDayOfWeek)
+            {
+                FirstDayOfMonth = FirstDayOfMonth.AddDays(AddDay);
+            }
+            return CalculateFrecuency(TheFrecuencyType, FirstDayOfMonth);
+        }
+
+        private DateTime CalculateFrecuency(FrecuencyType TheFrecuencyType, DateTime FirstDayOfMonth, int SchedulerWeek = 0)
         {
             switch (TheFrecuencyType)
             {
                 case FrecuencyType.Second:
-                    FirstDayOfMonth = FirstDayOfMonth.AddDays(7);
+                    FirstDayOfMonth = FirstDayOfMonth.AddDays(7 - SchedulerWeek);
                     break;
                 case FrecuencyType.Third:
-                    FirstDayOfMonth = FirstDayOfMonth.AddDays(14);
+                    FirstDayOfMonth = FirstDayOfMonth.AddDays(14 - SchedulerWeek);
                     break;
                 case FrecuencyType.Fourth:
-                    FirstDayOfMonth = FirstDayOfMonth.AddDays(21);
+                    FirstDayOfMonth = FirstDayOfMonth.AddDays(21 - SchedulerWeek);
                     break;
             }
             return FirstDayOfMonth;

@@ -60,10 +60,6 @@ namespace SchedulerClass
                 case "Weekly":
                     TheResult = this.CalculateWeek(TheResult, SchedulerClass.WeekValue,
                         SchedulerClass.OccursValue, JumpTime, SchedulerClass.TimeConfiguration?.StartTime);
-                    if (SchedulerClass.TimeConfiguration != null)
-                    {
-                        TheResult = this.ValidateTime(TheResult, SchedulerClass.CurrentDate, SchedulerClass.TimeConfiguration.StartTime);
-                    }
                     AdditionalDescription.AppendFormat(
                         " every {0} weeks on {1}", SchedulerClass.OccursValue, string.Join(", ", SchedulerClass.WeekValue));
                     break;
@@ -81,15 +77,6 @@ namespace SchedulerClass
             }
             AdditionalDescription.Append(TheTimeDescription);
             return TheResult;
-        }
-
-        public DateTime ValidateTime(DateTime Result, DateTime CurrentDate, TimeSpan StartTime)
-        {
-            if (CurrentDate < Result && CurrentDate.TimeOfDay == Result.TimeOfDay)
-            {
-                return this.AuxiliaryClass.JoinDateWithTime(Result, StartTime);
-            }
-            return Result;
         }
 
         public void ValidateData(Scheduler SchedulerClass)
@@ -148,7 +135,7 @@ namespace SchedulerClass
 
         public DateTime CalculateWeek(DateTime TheDate, SchedulerWeek[] WeekValue, int NumberOfWeeks, bool JumpTime, TimeSpan? startTime)
         {
-            int TheCurrentDay = this.AuxiliaryClass.GetSchedulerWeek(TheDate);
+            int TheCurrentDay = (int)this.AuxiliaryClass.GetSchedulerWeek(TheDate);
             int TheResultPos = 0;
             int TheResultNeg = 0;
 
