@@ -9,13 +9,15 @@ namespace SchedulerClass
     public class TimeConfigurationGestor
     {
         private Auxiliary AuxiliaryClass;
+        private TextTranslateManager TranslateClass;
         public TimeConfigurationGestor()
         {
             this.AuxiliaryClass = new Auxiliary();
         }
 
-        public DateTime CalculateHours(TimeConfiguration TimeConfigurationClass, DateTime TheDate)
+        public DateTime CalculateHours(TimeConfiguration TimeConfigurationClass, DateTime TheDate, TextTranslateManager TranslateClass)
         {
+            this.TranslateClass = TranslateClass;
             if (TimeConfigurationClass.OccursEvery)
             {
                 return CalculateHoursOccursEvery(TheDate, TimeConfigurationClass);
@@ -60,7 +62,7 @@ namespace SchedulerClass
             DateTime TheResultTime = this.AuxiliaryClass.JoinDateWithTime(TheDate, TimeConfigurationClass.OnceTime.Value);
             if (this.TimeNotInRange(TheResultTime.TimeOfDay, TimeConfigurationClass.StartTime, TimeConfigurationClass.EndTime))
             {
-                throw new Exception("The times are not in the range established in the Configuration.");
+                throw new Exception(this.TranslateClass.GetText("TIME_NOT_RANGE"));
             }
             return TheResultTime;
         }

@@ -10,6 +10,7 @@ namespace SchedulerClass
     public class SchedulerGestor
     {
         private Auxiliary AuxiliaryClass;
+        private TextTranslateManager TranslateClass;
         public SchedulerGestor()
         {
             this.AuxiliaryClass = new Auxiliary();
@@ -17,28 +18,29 @@ namespace SchedulerClass
 
         public DateTime CalculateDates(Scheduler SchedulerClass)
         {
+            this.TranslateClass = new TextTranslateManager(SchedulerClass.Culture);
+            CultureInfo.CurrentCulture = new CultureInfo(this.TranslateClass.GetText("CULTURE"));
             this.ValidateData(SchedulerClass);
-            this.ValidateDates(SchedulerClass.CurrentDate, SchedulerClass.StartDate, SchedulerClass.EndDate);
 
-            StringBuilder sb = new StringBuilder(" Scheluder will be used on {0} starting on ");
-            sb.Append(SchedulerClass.StartDate);
+            StringBuilder sb = new StringBuilder(this.TranslateClass.GetText("SCHEDULER_WILL_USED"));
+            sb.Append(SchedulerClass.StartDate.ToString("G"));
             if (SchedulerClass.EndDate.HasValue)
             {
-                sb.Append($" and ending {SchedulerClass.EndDate}");
+                sb.Append(this.TranslateClass.GetText("END_DATE") + SchedulerClass.EndDate?.ToString("G"));
             }
 
             DateTime TheResult;
             if (SchedulerClass.Type.Equals("Once"))
             {
                 TheResult = SchedulerClass.InputDate.Value;
-                sb.Insert(0, "Occurs once.");
-                sb.Replace("{0}", TheResult.ToString());
+                sb.Insert(0, this.TranslateClass.GetText("OCCURS_ONCE"));
+                sb.Replace("{0}", TheResult.ToString("G"));
             }
             else
             {
                 TheResult = CalculateRecurringDates(SchedulerClass, out StringBuilder FinalDescription);
                 sb.Insert(0, FinalDescription);
-                sb.Replace("{0}", TheResult.ToString());
+                sb.Replace("{0}", TheResult.ToString("G"));
             }
 
             this.ValidateDates(TheResult, SchedulerClass.StartDate, SchedulerClass.EndDate);
@@ -48,7 +50,7 @@ namespace SchedulerClass
 
         public DateTime CalculateRecurringDates(Scheduler SchedulerClass, out StringBuilder AdditionalDescription)
         {
-            AdditionalDescription = new StringBuilder("Occurs");
+            AdditionalDescription = new StringBuilder(this.TranslateClass.GetText("OCCURS"));
             DateTime TheResult = this.CalculateTime(SchedulerClass.CurrentDate, SchedulerClass.TimeConfiguration, out string TheTimeDescription);
             bool JumpTime = SchedulerClass.CurrentDate < TheResult;
 
@@ -60,16 +62,22 @@ namespace SchedulerClass
                 case "Weekly":
                     TheResult = this.CalculateWeek(TheResult, SchedulerClass.WeekValue,
                         SchedulerClass.OccursValue, JumpTime, SchedulerClass.TimeConfiguration?.StartTime);
+                    List<string> WeekValues = new List<string>();
+                    foreach (var item in SchedulerClass.WeekValue)
+                    {
+                        WeekValues.Add(this.TranslateClass.GetText(item.ToString()));
+                    }
                     AdditionalDescription.AppendFormat(
-                        " every {0} weeks on {1}", SchedulerClass.OccursValue, string.Join(", ", SchedulerClass.WeekValue));
+                        this.TranslateClass.GetText("EVERY_WEEKS"), SchedulerClass.OccursValue, string.Join(", ", WeekValues));
                     break;
                 case "Monthly":
                     TheResult = new MonthlyConfigurationGestor().CalculateMonthlyConfiguration(
                         TheResult, SchedulerClass.MonthlyConfiguration.FrecuencyType, SchedulerClass.MonthlyConfiguration.WeeklyValue,
                         SchedulerClass.OccursValue, JumpTime, JumpTime);
                     AdditionalDescription.AppendFormat(
-                        " the {0} {1} of every {2} months", SchedulerClass.MonthlyConfiguration.FrecuencyType,
-                        SchedulerClass.MonthlyConfiguration.WeeklyValue, SchedulerClass.OccursValue);
+                        this.TranslateClass.GetText("EVERY_MONTHS"), 
+                        this.TranslateClass.GetText(SchedulerClass.MonthlyConfiguration.FrecuencyType.ToString()),
+                        this.TranslateClass.GetText(SchedulerClass.MonthlyConfiguration.WeeklyValue.ToString()), SchedulerClass.OccursValue);
                     break;
                 case "Yearly":
                     TheResult = TheResult.AddYears(SchedulerClass.OccursValue);
@@ -83,28 +91,28 @@ namespace SchedulerClass
         {
             if (string.IsNullOrEmpty(SchedulerClass.Type))
             {
-                throw new Exception("You must select a Type in the Configuration.");
+                throw new Exception(this.TranslateClass.GetText("TYPE_IS_NOT_SELECTED"));
             }
             if (SchedulerClass.Type.Equals("Once"))
             {
                 if (SchedulerClass.InputDate.HasValue == false)
                 {
-                    throw new Exception("You must input date to perform the calculation.");
+                    throw new Exception(this.TranslateClass.GetText("INPUT_DATE_WITHOUT_VALUE"));
                 }
                 if (SchedulerClass.CurrentDate > SchedulerClass.InputDate.Value)
                 {
-                    throw new Exception("The Current Date can not be greater than the one entered in the input.");
+                    throw new Exception(this.TranslateClass.GetText("CURRENT_DATE_GREATER_THAN_INPUT_DATE"));
                 }
             }
             if (SchedulerClass.Type.Equals("Recurring"))
             {
                 if (string.IsNullOrEmpty(SchedulerClass.Occurs))
                 {
-                    throw new Exception("You must enter a value in the occurs field.");
+                    throw new Exception(this.TranslateClass.GetText("OCCURS_FIELD_WITHOUT_VALUE"));
                 }
                 if (SchedulerClass.Occurs.Equals("Weekly") && SchedulerClass.WeekValue.Length == 0)
                 {
-                    throw new Exception("You must enter a value in the weeks field.");
+                    throw new Exception(this.TranslateClass.GetText("WEEKS_FIELD_WITHOUT_VALUE"));
                 }
             }
         }
@@ -113,22 +121,22 @@ namespace SchedulerClass
         {
             if (TheDate < StartDate || (EndDate.HasValue && TheDate > EndDate.Value))
             {
-                throw new Exception("The dates are not in the range established in the Configuration.");
+                throw new Exception(this.TranslateClass.GetText("DATE_NOT_RANGE"));
             }
         }
 
         public DateTime CalculateTime(DateTime TheDate, TimeConfiguration TimeConfigurationClass, out string TheDescription)
         {
-            TheDescription = " every date.";
+            TheDescription = this.TranslateClass.GetText("EVERY_DATE");
             if (TimeConfigurationClass != null)
             {
                 if (TimeConfigurationClass.OccursEvery)
                 {
-                    TheDescription = string.Format(" every {0} {1} between {2} and {3}.",
+                    TheDescription = string.Format(this.TranslateClass.GetText("EVERY_TIME"),
                         TimeConfigurationClass.OccursTimeValue, TimeConfigurationClass.OccursTime,
                         TimeConfigurationClass.StartTime, TimeConfigurationClass.EndTime);
                 }
-                return new TimeConfigurationGestor().CalculateHours(TimeConfigurationClass, TheDate);
+                return new TimeConfigurationGestor().CalculateHours(TimeConfigurationClass, TheDate, this.TranslateClass);
             }
             return TheDate;
         }

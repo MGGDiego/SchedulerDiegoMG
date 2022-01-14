@@ -22,16 +22,6 @@ namespace SchedulerClass
         public SchedulerWeek[] WeekValue { get; set; }
         public TimeConfiguration TimeConfiguration { get; set; }
         public MonthlyConfiguration MonthlyConfiguration { get; set; }
-    }
-
-    public enum SchedulerWeek
-    {
-        Monday = 1,
-        Tuesday = 2,
-        Wednesday = 3,
-        Thursday = 4,
-        Friday = 5,
-        Saturday = 6,
-        Sunday = 7
+        public TextCulture Culture { get; set; }
     }
 }

@@ -59,7 +59,7 @@ namespace SchedulerClass.UnitTest
         public void CalculateDates_TypeOnceInputDate06Oct_ReturnsDescriptionWithoutEndDate()
         {
             string DescriptionWithoutEndDate =
-                "Occurs once. Scheluder will be used on 06/10/2021 0:00:00 starting on 01/01/2021 0:00:00";
+                "Occurs once. Scheduler will be used on 06/10/2021 00:00:00 starting on 01/01/2021 00:00:00";
             var scheduler = new Scheduler
             {
                 CurrentDate = new DateTime(2021, 10, 04),
@@ -77,7 +77,7 @@ namespace SchedulerClass.UnitTest
         public void CalculateDates_TypeOnceInputDate06Oct_ReturnsDescriptionWithEndDate()
         {
             string DescriptionWithEndDate =
-                "Occurs once. Scheluder will be used on 06/10/2021 0:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00";
+                "Occurs once. Scheduler will be used on 06/10/2021 00:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00";
             var scheduler = new Scheduler
             {
                 CurrentDate = new DateTime(2021, 10, 04),
@@ -118,8 +118,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 10, 21), result[4]);
             Assert.AreEqual(new DateTime(2021, 10, 24), result[5]);
             Assert.AreEqual(new DateTime(2021, 10, 27), result[6]);
-            Assert.AreEqual("Occurs every date. Scheluder will be used on 27/10/2021 0:00:00 " +
-                "starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00", scheduler.OutDescription);
+            Assert.AreEqual("Occurs every date. Scheduler will be used on 27/10/2021 00:00:00 " +
+                "starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00", scheduler.OutDescription);
         }
 
         [TestMethod]
@@ -151,8 +151,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 10, 15, 23, 30, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 10, 15, 23, 50, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 10, 18, 23, 30, 0), result[6]);
-            Assert.AreEqual("Occurs every 20 Minute between 23:30:00 and 23:59:59. Scheluder will be used " +
-                "on 18/10/2021 23:30:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00", scheduler.OutDescription);
+            Assert.AreEqual("Occurs every 20 Minute between 23:30:00 and 23:59:59. Scheduler will be used " +
+                "on 18/10/2021 23:30:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00", scheduler.OutDescription);
         }
 
         [TestMethod]
@@ -177,7 +177,7 @@ namespace SchedulerClass.UnitTest
         public void CalculateDates_TypeRecurringInputDate06Oct_ReturnsDescriptionWithoutEndDate()
         {
             string DescriptionWithoutEndDate =
-                "Occurs every date. Scheluder will be used on 09/10/2021 0:00:00 starting on 01/01/2021 0:00:00";
+                "Occurs every date. Scheduler will be used on 09/10/2021 00:00:00 starting on 01/01/2021 00:00:00";
             var scheduler = new Scheduler
             {
                 CurrentDate = new DateTime(2021, 10, 06),
@@ -196,7 +196,7 @@ namespace SchedulerClass.UnitTest
         public void CalculateDates_TypeRecurringInputDate06Oct_ReturnsDescriptionWithEndDate()
         {
             string DescriptionWithEndDate =
-                "Occurs every date. Scheluder will be used on 09/10/2021 0:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00";
+                "Occurs every date. Scheduler will be used on 09/10/2021 00:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00";
             var scheduler = new Scheduler
             {
                 CurrentDate = new DateTime(2021, 10, 06),
@@ -233,22 +233,6 @@ namespace SchedulerClass.UnitTest
         }
         #endregion
 
-        [TestMethod]
-        public void ValidateDates_CurrentDateNotRangeDates_ReturnsException()
-        {
-            var scheduler = new Scheduler
-            {
-                CurrentDate = new DateTime(2022, 10, 06),
-                StartDate = new DateTime(2021, 01, 01),
-                EndDate = new DateTime(2021, 12, 31)
-            };
-
-            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().ValidateDates(
-                scheduler.CurrentDate, scheduler.StartDate, scheduler.EndDate));
-
-            Assert.AreEqual("The dates are not in the range established in the Configuration.", ex.Message);
-        }
-
         #region ValidateData
         [TestMethod]
         public void ValidateData_TypeIsEmpty_ReturnsException()
@@ -258,7 +242,7 @@ namespace SchedulerClass.UnitTest
                 Type = string.Empty
             };
 
-            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().ValidateData(scheduler));
+            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().CalculateDates(scheduler));
 
             Assert.AreEqual("You must select a Type in the Configuration.", ex.Message);
         }
@@ -271,7 +255,7 @@ namespace SchedulerClass.UnitTest
                 Type = "Once"
             };
 
-            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().ValidateData(scheduler));
+            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().CalculateDates(scheduler));
 
             Assert.AreEqual("You must input date to perform the calculation.", ex.Message);
         }
@@ -286,7 +270,7 @@ namespace SchedulerClass.UnitTest
                 CurrentDate = new DateTime(2021, 02, 01)
             };
 
-            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().ValidateData(scheduler));
+            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().CalculateDates(scheduler));
 
             Assert.AreEqual("The Current Date can not be greater than the one entered in the input.", ex.Message);
         }
@@ -299,9 +283,9 @@ namespace SchedulerClass.UnitTest
                 Type = "Recurring"
             };
 
-            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().ValidateData(scheduler));
+            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().CalculateDates(scheduler));
 
-            Assert.AreEqual("You must enter a value in the occurs field.", ex.Message);
+            Assert.AreEqual("You must enter a value in the Occurs field.", ex.Message);
         }
 
         [TestMethod]
@@ -314,9 +298,9 @@ namespace SchedulerClass.UnitTest
                 WeekValue = Array.Empty<SchedulerWeek>()
             };
 
-            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().ValidateData(scheduler));
+            var ex = Assert.ThrowsException<Exception>(() => new SchedulerGestor().CalculateDates(scheduler));
 
-            Assert.AreEqual("You must enter a value in the weeks field.", ex.Message);
+            Assert.AreEqual("You must enter a value in the Weeks field.", ex.Message);
         }
         #endregion
 
@@ -350,8 +334,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 11, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 01, 18, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 18, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 1 weeks on Monday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 18/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 1 weeks on Monday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 18/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -384,8 +368,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 12, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 01, 19, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 19, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 1 weeks on Tuesday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 19/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 1 weeks on Tuesday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 19/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -418,8 +402,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 13, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 01, 20, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 20, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 1 weeks on Wednesday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 20/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 1 weeks on Wednesday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 20/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -452,8 +436,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 14, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 01, 21, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 21, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 1 weeks on Thursday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 21/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 1 weeks on Thursday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 21/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -486,8 +470,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 15, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 01, 22, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 22, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 1 weeks on Friday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 22/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 1 weeks on Friday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 22/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -520,8 +504,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 16, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 01, 23, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 23, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 1 weeks on Saturday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 23/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 1 weeks on Saturday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 23/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -554,8 +538,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 17, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 01, 24, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 24, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 1 weeks on Sunday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 24/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 1 weeks on Sunday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 24/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -590,8 +574,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 18, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 02, 01, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 02, 01, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 2 weeks on Monday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 01/02/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 2 weeks on Monday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 01/02/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -624,8 +608,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 19, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 02, 02, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 02, 02, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 2 weeks on Tuesday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 02/02/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 2 weeks on Tuesday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 02/02/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -658,8 +642,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 20, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 02, 03, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 02, 03, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 2 weeks on Wednesday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 03/02/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 2 weeks on Wednesday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 03/02/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -692,8 +676,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 21, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 02, 04, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 02, 04, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 2 weeks on Thursday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 04/02/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 2 weeks on Thursday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 04/02/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -726,8 +710,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 22, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 02, 05, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 02, 05, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 2 weeks on Friday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 05/02/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 2 weeks on Friday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 05/02/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -760,8 +744,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 23, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 02, 06, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 02, 06, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 2 weeks on Saturday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 06/02/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 2 weeks on Saturday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 06/02/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -794,8 +778,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 24, 8, 0, 0), result[4]);
             Assert.AreEqual(new DateTime(2021, 02, 07, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 02, 07, 6, 0, 0), result[6]);
-            Assert.AreEqual("Occurs every 2 weeks on Sunday every 2 Hour between 04:00:00 and 08:00:00. Scheluder will be used " +
-                "on 07/02/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+            Assert.AreEqual("Occurs every 2 weeks on Sunday every 2 Hour between 04:00:00 and 08:00:00. Scheduler will be used " +
+                "on 07/02/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -832,8 +816,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 07, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 07, 6, 0, 0), result[6]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 07/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 07/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -868,8 +852,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 07, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 07, 6, 0, 0), result[6]);
             Assert.AreEqual("Occurs every 2 weeks on Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 07/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 07/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -902,8 +886,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 11, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 12, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday " +
-                "every date. Scheluder will be used on 12/01/2021 4:00:00 starting on 01/01/2021 0:00:00 " +
-                "and ending 31/12/2021 0:00:00", scheduler.OutDescription);
+                "every date. Scheduler will be used on 12/01/2021 04:00:00 starting on 01/01/2021 00:00:00 " +
+                "and ending 31/12/2021 00:00:00", scheduler.OutDescription);
         }
 
         [TestMethod]
@@ -933,8 +917,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 18, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 19, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 2 weeks on Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday " +
-                "every date. Scheluder will be used on 19/01/2021 4:00:00 starting on 01/01/2021 0:00:00 " +
-                "and ending 31/12/2021 0:00:00", scheduler.OutDescription);
+                "every date. Scheduler will be used on 19/01/2021 04:00:00 starting on 01/01/2021 00:00:00 " +
+                "and ending 31/12/2021 00:00:00", scheduler.OutDescription);
         }
         #endregion
 
@@ -970,8 +954,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 13, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 13, 6, 0, 0), result[6]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 13/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 13/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -1006,8 +990,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 20, 4, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 20, 6, 0, 0), result[6]);
             Assert.AreEqual("Occurs every 2 weeks on Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 20/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 20/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1040,8 +1024,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 17, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 18, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday " +
-                "every date. Scheluder will be used on 18/01/2021 4:00:00 starting on 01/01/2021 0:00:00 " +
-                "and ending 31/12/2021 0:00:00", scheduler.OutDescription);
+                "every date. Scheduler will be used on 18/01/2021 04:00:00 starting on 01/01/2021 00:00:00 " +
+                "and ending 31/12/2021 00:00:00", scheduler.OutDescription);
         }
 
         [TestMethod]
@@ -1071,8 +1055,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 24, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 02, 01, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 2 weeks on Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday " +
-                "every date. Scheluder will be used on 01/02/2021 4:00:00 starting on 01/01/2021 0:00:00 " +
-                "and ending 31/12/2021 0:00:00", scheduler.OutDescription);
+                "every date. Scheduler will be used on 01/02/2021 04:00:00 starting on 01/01/2021 00:00:00 " +
+                "and ending 31/12/2021 00:00:00", scheduler.OutDescription);
         }
         #endregion
 
@@ -1108,8 +1092,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 07, 6, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 11, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Tuesday, Wednesday, Thursday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 11/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 11/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -1144,8 +1128,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 07, 6, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 18, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 2 weeks on Monday, Tuesday, Wednesday, Thursday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 18/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 18/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1182,8 +1166,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 13, 6, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 14, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Tuesday, Wednesday, Thursday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 14/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 14/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -1218,8 +1202,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 20, 6, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 21, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 2 weeks on Monday, Tuesday, Wednesday, Thursday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 21/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 21/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1256,8 +1240,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 15, 6, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 16, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Friday, Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 16/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 16/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -1292,8 +1276,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 22, 6, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 23, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 2 weeks on Friday, Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 23/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 23/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1330,8 +1314,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 17, 6, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 22, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Friday, Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 22/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 22/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -1366,8 +1350,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 24, 6, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 02, 05, 4, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 2 weeks on Friday, Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 05/02/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 05/02/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1404,8 +1388,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 12, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 12, 6, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Tuesday, Wednesday, Thursday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 12/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 12/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1442,8 +1426,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 18, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 18, 6, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Tuesday, Wednesday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 18/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 18/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
 
@@ -1478,8 +1462,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 02, 01, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 02, 01, 6, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 2 weeks on Monday, Tuesday, Wednesday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 01/02/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 01/02/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1516,8 +1500,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 17, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 17, 6, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Saturday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 17/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 17/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1554,8 +1538,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 23, 4, 0, 0), result[6]);
             Assert.AreEqual(new DateTime(2021, 01, 23, 6, 0, 0), result[7]);
             Assert.AreEqual("Occurs every 1 weeks on Friday, Saturday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 23/01/2021 6:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 23/01/2021 06:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1591,8 +1575,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 10, 6, 0, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 11, 4, 0, 0), result[6]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Wednesday, Friday, Sunday " +
-                "every 2 Hour between 04:00:00 and 06:00:00. Scheluder will be used " +
-                "on 11/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 2 Hour between 04:00:00 and 06:00:00. Scheduler will be used " +
+                "on 11/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1628,8 +1612,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 13, 4, 30, 0), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 13, 5, 0, 0), result[6]);
             Assert.AreEqual("Occurs every 1 weeks on Monday, Wednesday, Friday, Sunday " +
-                "every 30 Minute between 04:00:00 and 05:00:00. Scheluder will be used " +
-                "on 13/01/2021 5:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 30 Minute between 04:00:00 and 05:00:00. Scheduler will be used " +
+                "on 13/01/2021 05:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1665,8 +1649,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 09, 4, 0, 2), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 12, 4, 0, 0), result[6]);
             Assert.AreEqual("Occurs every 1 weeks on Tuesday, Thursday, Saturday " +
-                "every 1 Second between 04:00:00 and 04:00:02. Scheluder will be used " +
-                "on 12/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 1 Second between 04:00:00 and 04:00:02. Scheduler will be used " +
+                "on 12/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion
@@ -1702,8 +1686,8 @@ namespace SchedulerClass.UnitTest
             Assert.AreEqual(new DateTime(2021, 01, 14, 4, 0, 2), result[5]);
             Assert.AreEqual(new DateTime(2021, 01, 16, 4, 0, 0), result[6]);
             Assert.AreEqual("Occurs every 1 weeks on Tuesday, Thursday, Saturday " +
-                "every 1 Second between 04:00:00 and 04:00:02. Scheluder will be used " +
-                "on 16/01/2021 4:00:00 starting on 01/01/2021 0:00:00 and ending 31/12/2021 0:00:00",
+                "every 1 Second between 04:00:00 and 04:00:02. Scheduler will be used " +
+                "on 16/01/2021 04:00:00 starting on 01/01/2021 00:00:00 and ending 31/12/2021 00:00:00",
                 scheduler.OutDescription);
         }
         #endregion

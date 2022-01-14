@@ -50,6 +50,8 @@
     <Compile Include="SchedulerGestor.cs" />
     <Compile Include="TimeConfigurationGestor.cs" />
     <Compile Include="TimeConfiguration.cs" />
+    <Compile Include="TextTranslate.cs" />
+    <Compile Include="TextTranslateManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

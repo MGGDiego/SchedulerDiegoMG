@@ -19,7 +19,7 @@ namespace SchedulerClass.UnitTest
                 OnceTime = new TimeSpan(15, 23, 00)
             };
 
-            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 17, 00, 00));
+            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 17, 00, 00), new TextTranslateManager());
 
             Assert.AreEqual(new DateTime(2021, 10, 28, 15, 23, 00), result);
         }
@@ -34,7 +34,7 @@ namespace SchedulerClass.UnitTest
                 OccursTimeValue = 2
             };
             
-            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 17, 00, 00));
+            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 17, 00, 00), new TextTranslateManager());
 
             Assert.AreEqual(new DateTime(2021, 10, 28, 19, 00, 00), result);
         }
@@ -49,7 +49,7 @@ namespace SchedulerClass.UnitTest
                 OccursTimeValue = 2
             };
 
-            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 21, 00, 00));
+            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 21, 00, 00), new TextTranslateManager());
 
             Assert.AreEqual(new DateTime(2021, 10, 28, 12, 00, 00), result);
         }
@@ -64,7 +64,7 @@ namespace SchedulerClass.UnitTest
                 OccursTimeValue = 30
             };
 
-            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 18, 00, 00));
+            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 18, 00, 00), new TextTranslateManager());
 
             Assert.AreEqual(new DateTime(2021, 10, 28, 18, 30, 00), result);
         }
@@ -79,7 +79,7 @@ namespace SchedulerClass.UnitTest
                 OccursTimeValue = 30
             };
 
-            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 18, 00, 00));
+            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 18, 00, 00), new TextTranslateManager());
 
             Assert.AreEqual(new DateTime(2021, 10, 28, 18, 00, 30), result);
         }
@@ -93,7 +93,7 @@ namespace SchedulerClass.UnitTest
                 OnceTime = new TimeSpan(21, 23, 00)
             };
 
-            var ex = Assert.ThrowsException<Exception>(() => new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 17, 00, 00)));
+            var ex = Assert.ThrowsException<Exception>(() => new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 17, 00, 00), new TextTranslateManager()));
 
             Assert.AreEqual("The times are not in the range established in the Configuration.", ex.Message);
         }
@@ -108,7 +108,7 @@ namespace SchedulerClass.UnitTest
                 OccursTimeValue = 2
             };
 
-            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 19, 00, 00));
+            var result = new TimeConfigurationGestor().CalculateHours(timeConfiguration, new DateTime(2021, 10, 28, 19, 00, 00), new TextTranslateManager());
 
             Assert.AreEqual(new DateTime(2021, 10, 28, 12, 00, 00), result);
         }
